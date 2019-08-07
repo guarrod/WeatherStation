@@ -82,20 +82,20 @@ void drawTextFlowDemo() {
 }
 
 void drawTextAlignmentDemo() {
-    // Text alignment demo
+  // Text alignment demo
   display.setFont(ArialMT_Plain_10);
 
   // The coordinates define the left starting point of the text
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.drawString(0, 10, "Left aligned (0,10)");
+  //display.setTextAlignment(TEXT_ALIGN_LEFT);
+  //display.drawString(0, 10, "Left aligned (0,10)");
 
   // The coordinates define the center of the text
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.drawString(64, 22, "Center aligned (64,22)");
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.drawString(15, 0, "WEATHER STATION");
 
   // The coordinates define the right end of the text
-  display.setTextAlignment(TEXT_ALIGN_RIGHT);
-  display.drawString(128, 33, "Right aligned (128,33)");
+  //display.setTextAlignment(TEXT_ALIGN_RIGHT);
+  //display.drawString(128, 33, "Right aligned (128,33)");
 }
 
 void drawRectDemo() {
@@ -140,28 +140,34 @@ void drawProgressBarDemo() {
 void drawImageDemo() {
     // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
     // on how to create xbm files
-    display.drawXbm(34, 14, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
+    display.drawXbm(34, 14, clear_day_width, clear_day_height, clear_day_bits);
 }
 
-Demo demos[] = {drawFontFaceDemo, drawTextFlowDemo, drawTextAlignmentDemo, drawRectDemo, drawCircleDemo, drawProgressBarDemo, drawImageDemo};
+//Demo demos[] = {drawFontFaceDemo, drawTextFlowDemo, drawTextAlignmentDemo, drawRectDemo, drawCircleDemo, drawProgressBarDemo, drawImageDemo};
+Demo demos[] = {drawTextAlignmentDemo, drawImageDemo};
+
 int demoLength = (sizeof(demos) / sizeof(Demo));
 long timeSinceLastModeSwitch = 0;
 
 void loop() {
   // clear the display
-  display.clear();
-  // draw the current demo method
-  demos[demoMode]();
-
-  display.setTextAlignment(TEXT_ALIGN_RIGHT);
-  display.drawString(10, 128, String(millis()));
-  // write the buffer to the display
+  drawTextAlignmentDemo();
   display.display();
+  // draw the current demo method
+//  demos[demoMode]();
 
-  if (millis() - timeSinceLastModeSwitch > DEMO_DURATION) {
-    demoMode = (demoMode + 1)  % demoLength;
-    timeSinceLastModeSwitch = millis();
-  }
-  counter++;
-  delay(10);
+//  display.setTextAlignment(TEXT_ALIGN_RIGHT);
+//  display.drawString(10, 128, String(millis()));
+//  // write the buffer to the display
+  
+//
+//  if (millis() - timeSinceLastModeSwitch > DEMO_DURATION) {
+//    demoMode = (demoMode + 1)  % demoLength;
+//    timeSinceLastModeSwitch = millis();
+//  }
+//  counter++;
+//  delay(10);
+
+    delay(3000);
+    display.display();
 }
