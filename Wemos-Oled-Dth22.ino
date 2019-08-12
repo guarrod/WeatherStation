@@ -1,130 +1,33 @@
-// Include the correct display library
-
-// For a connection via I2C using the Arduino Wire include:
-#include <Wire.h>               // Only needed for Arduino 1.6.5 and earlier
-#include "SSD1306Wire.h"        // legacy: #include "SSD1306.h"
-// OR #include "SH1106Wire.h"   // legacy: #include "SH1106.h"
-
-// For a connection via I2C using brzo_i2c (must be installed) include:
-// #include <brzo_i2c.h>        // Only needed for Arduino 1.6.5 and earlier
-// #include "SSD1306Brzo.h"
-// OR #include "SH1106Brzo.h"
-
-// For a connection via SPI include:
-// #include <SPI.h>             // Only needed for Arduino 1.6.5 and earlier
-// #include "SSD1306Spi.h"
-// OR #include "SH1106SPi.h"
+#include <Wire.h>                               // Only needed for Arduino 1.6.5 and earlier
+#include "SSD1306Wire.h"                        // legacy: #include "SSD1306.h"
+#include "images.h"                             // For weather icons
+#include "Open_Sans_Condensed_Bold_16.h"        // Open Sans Condensed Font for the numbers
+#include "Open_Sans_Condensed_Bold_24.h"
+#include "DHT.h"                                // For DHT 22
+#include <math.h>
 
 
-// Optionally include custom images
-#include "images.h"
+  #define DHTPIN 2     // what pin we're connected to
+  #define DHTTYPE DHT22   // DHT 22  (AM2302)
+  //int maxHum = 60;
+  //int maxTemp = 40;
 
+DHT dht(DHTPIN, DHTTYPE);
 
 // Initialize the OLED display using Arduino Wire:
 SSD1306Wire display(0x3c, SDA, SCL);   // ADDRESS, SDA, SCL  -  SDA and SCL usually populate automatically based on your board's pins_arduino.h
-// SSD1306Wire display(0x3c, D3, D5);  // ADDRESS, SDA, SCL  -  If not, they can be specified manually.
-// SSD1306Wire display(0x3c, SDA, SCL, GEOMETRY_128_32);  // ADDRESS, SDA, SCL, OLEDDISPLAY_GEOMETRY  -  Extra param required for 128x32 displays.
-// SH1106 display(0x3c, SDA, SCL);     // ADDRESS, SDA, SCL
-
-// Initialize the OLED display using brzo_i2c:
-// SSD1306Brzo display(0x3c, D3, D5);  // ADDRESS, SDA, SCL
-// or
-// SH1106Brzo display(0x3c, D3, D5);   // ADDRESS, SDA, SCL
-
-// Initialize the OLED display using SPI:
-// D5 -> CLK
-// D7 -> MOSI (DOUT)
-// D0 -> RES
-// D2 -> DC
-// D8 -> CS
-// SSD1306Spi display(D0, D2, D8);  // RES, DC, CS
-// or
-// SH1106Spi display(D0, D2);       // RES, DC
-
-
-#define DEMO_DURATION 3000
-typedef void (*Demo)(void);
 
 int demoMode = 0;
 int counter = 1;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println();
-  Serial.println();
-
-
-  // Initialising the UI will init the display too.
   display.init();
-
+  dht.begin();
   display.flipScreenVertically();
-  display.setFont(ArialMT_Plain_10);
 
-}
-
-void drawFontFaceDemo() {
-    // Font Demo1
-    // create more fonts at http://oleddisplay.squix.ch/
-    display.setTextAlignment(TEXT_ALIGN_LEFT);
-    display.setFont(ArialMT_Plain_10);
-    display.drawString(0, 0, "Hello world");
-    display.setFont(ArialMT_Plain_16);
-    display.drawString(0, 10, "Hello world");
-    display.setFont(ArialMT_Plain_24);
-    display.drawString(0, 26, "Hello world");
-}
-
-void drawTextFlowDemo() {
-    display.setFont(ArialMT_Plain_10);
-    display.setTextAlignment(TEXT_ALIGN_LEFT);
-    display.drawStringMaxWidth(0, 0, 128,
-      "Lorem ipsum\n dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore." );
-}
-
-void drawTextAlignmentDemo() {
-  // Text alignment demo
-  display.setFont(ArialMT_Plain_10);
-
-  // The coordinates define the left starting point of the text
-  //display.setTextAlignment(TEXT_ALIGN_LEFT);
-  //display.drawString(0, 10, "Left aligned (0,10)");
-
-  // The coordinates define the center of the text
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.drawString(15, 0, "WEATHER STATION");
-
-  // The coordinates define the right end of the text
-  //display.setTextAlignment(TEXT_ALIGN_RIGHT);
-  //display.drawString(128, 33, "Right aligned (128,33)");
-}
-
-void drawRectDemo() {
-      // Draw a pixel at given position
-    for (int i = 0; i < 10; i++) {
-      display.setPixel(i, i);
-      display.setPixel(10 - i, i);
-    }
-    display.drawRect(12, 12, 20, 20);
-
-    // Fill the rectangle
-    display.fillRect(14, 14, 17, 17);
-
-    // Draw a line horizontally
-    display.drawHorizontalLine(0, 40, 20);
-
-    // Draw a line horizontally
-    display.drawVerticalLine(40, 0, 20);
-}
-
-void drawCircleDemo() {
-  for (int i=1; i < 8; i++) {
-    display.setColor(WHITE);
-    display.drawCircle(32, 32, i*3);
-    if (i % 2 == 0) {
-      display.setColor(BLACK);
-    }
-    display.fillCircle(96, 32, 32 - i* 3);
-  }
+  
+  Serial.println("Iniciando");
 }
 
 void drawProgressBarDemo() {
@@ -137,37 +40,68 @@ void drawProgressBarDemo() {
   display.drawString(64, 15, String(progress) + "%");
 }
 
-void drawImageDemo() {
-    // see http://blog.squix.org/2015/05/esp8266-nodemcu-how-to-create-xbm.html
-    // on how to create xbm files
-    display.drawXbm(34, 14, clear_day_width, clear_day_height, clear_day_bits);
-}
-
-//Demo demos[] = {drawFontFaceDemo, drawTextFlowDemo, drawTextAlignmentDemo, drawRectDemo, drawCircleDemo, drawProgressBarDemo, drawImageDemo};
-Demo demos[] = {drawTextAlignmentDemo, drawImageDemo};
-
-int demoLength = (sizeof(demos) / sizeof(Demo));
-long timeSinceLastModeSwitch = 0;
 
 void loop() {
-  // clear the display
-  drawTextAlignmentDemo();
-  display.display();
-  // draw the current demo method
-//  demos[demoMode]();
-
-//  display.setTextAlignment(TEXT_ALIGN_RIGHT);
-//  display.drawString(10, 128, String(millis()));
-//  // write the buffer to the display
+  delay(2000);
+  display.clear();
+  display.setFont(ArialMT_Plain_10);
   
-//
-//  if (millis() - timeSinceLastModeSwitch > DEMO_DURATION) {
-//    demoMode = (demoMode + 1)  % demoLength;
-//    timeSinceLastModeSwitch = millis();
-//  }
-//  counter++;
-//  delay(10);
 
-    delay(3000);
-    display.display();
+  // Reading temperature or humidity takes about 250 milliseconds!
+  float h = dht.readHumidity();
+  // Read temperature as Celsius (the default)
+  float t = dht.readTemperature();
+  // Compute heat index in Celsius
+  float hic = dht.computeHeatIndex(t, h, false);
+  
+  int humedad = round(h);
+  int temperatura = round(t);
+  int sensacion = round(hic);
+
+
+  // Check if any reads failed and exit early (to try again).
+  if (isnan(h) || isnan(t)) {
+    Serial.println(F("Failed to read from DHT sensor!"));
+    return;
+  }
+
+
+
+
+
+//  if(h > maxHum || t > maxTemp) {
+//      digitalWrite(fan, HIGH);
+//  } else {
+//     digitalWrite(fan, LOW); 
+//  }
+
+  Serial.print(F("Humidity: "));
+  Serial.print(h);
+  
+  Serial.print(F("%  Temperature: "));
+  Serial.print(t);
+  
+  Serial.print(F("°C "));
+  
+  Serial.print(F("°Heat index: "));
+  Serial.print(hic);
+  Serial.println(F("°C "));
+
+  display.setFont(ArialMT_Plain_10);
+  display.drawString(6, 0, "Indoor");
+
+  display.setFont(Open_Sans_Condensed_Bold_24);
+
+  //display.drawString(0, 12, "Temperatura: ");
+  display.drawString(0, 10, String(temperatura));
+  display.drawString(23, 10, "°");
+  
+  display.drawString(40,10, String(humedad));
+  display.drawString(65, 10, "%");
+  
+  //display.drawString(95, 25, String(sensacion));
+  //display.drawString(109, 25, "°C");
+  
+  display.display();
+
 }
