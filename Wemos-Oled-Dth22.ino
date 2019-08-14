@@ -16,11 +16,11 @@
 
 
 // WIFI
-//const char* WIFI_SSID = "Webcreek";
-//const char* WIFI_PWD = "gosu2017";
+const char* WIFI_SSID = "Webcreek";
+const char* WIFI_PWD = "gosu2017";
 
-const char* WIFI_SSID = "GUARRODSTUDIO";
-const char* WIFI_PWD = "3libras#";
+//const char* WIFI_SSID = "GUARRODSTUDIO";
+//const char* WIFI_PWD = "3libras#";
 
 
 #define DHTPIN 2     // what pin we're connected to
@@ -36,6 +36,7 @@ String CityID = "3652462";                                 //Your City ID
 WiFiClient client;
 char servername[] = "api.openweathermap.org";            // remote server we will connect to
 String result;
+String result2;
 int  counter = 60;
 String weatherDescription = "";
 String weatherLocation = "";
@@ -46,6 +47,7 @@ float Pressure;
 int tempOut;
 int humOut;
 String Icon;
+float weatherUvi;
 
 
 // Initialize the OLED display using Arduino Wire:
@@ -82,16 +84,7 @@ void setup() {
   Serial.println("--------------------------------------------------");
 
 
-
-
-
-
-
-
-
-
-
-  
+ 
 }
 
 void drawProgressBarDemo() {
@@ -154,35 +147,43 @@ void loop() {
 
   /////// INDOOR  ///////
   display.setFont(ArialMT_Plain_10);
-  display.drawString(2, 0, "Indoor / Outdoor");
+  display.drawString(0, 0, "Indoor");
 
   display.setFont(Open_Sans_Condensed_Bold_20);
 
   //display.drawString(0, 12, "Temperatura: ");
-  display.drawString(0, 12, String(temperatura));
-  display.drawString(20, 12, "°");
+  display.drawString(0, 7, String(temperatura));
+  display.drawString(20, 7, "°");
 
-  display.drawString(35, 12, String(humedad));
-  display.drawString(55, 12, "%");
+  display.drawString(35, 7, String(humedad));
+  //display.drawString(55, 7, "%");
+  display.drawXbm(55, 13, 8, 16, drop);
 
   //display.drawString(95, 25, String(sensacion));
   //display.drawString(109, 25, "°C");
 
 
   /////// OUTDOOR  ///////
+  display.setFont(ArialMT_Plain_10);
+  display.drawString(0, 33, "Outdoor");
 
-  display.drawString(0, 35, String(tempOut));
-  display.drawString(20, 35, "°");
+  display.setFont(Open_Sans_Condensed_Bold_20);
+  display.drawString(0, 41, String(tempOut));
+  display.drawString(20, 41, "°");
 
-  display.drawString(35, 35, String(humOut));
-  display.drawString(55, 35, "%");
+  display.drawString(35, 41, String(humOut));
+  //display.drawString(55, 41, "%");
+  display.drawXbm(55, 47, 8, 16, drop);
+
+  display.drawString(70, 41, String(weatherUvi));
+  display.setFont(ArialMT_Plain_10);
+  display.drawString(114, 52, "uV");
+  
 
   //display.drawString(40,80, String(Icon));
 
-  display.drawXbm(75,13, 50, 50, clear_day_bits);
-
-
-
+  display.drawXbm(75,-5, 50, 50, clear_day_bits);     //Icon TODO: Make Dinamyc
+  //display.drawHorizontalLine(20, 58, 60);          //For aligment tests
 
 
 
@@ -193,6 +194,7 @@ void loop() {
     counter = 0;
     delay(1000);
     getWeatherData();
+    getUvi();
   } else
   {
     counter++;
@@ -207,7 +209,6 @@ void loop() {
   display.display();
 
 }
-
 
 
 void getWeatherData()                                //client function to send/receive GET request data.
@@ -265,6 +266,51 @@ void getWeatherData()                                //client function to send/r
   humOut = round(humidity);
   Humidity = humidity;
   Pressure = pressure;
+}
+
+
+void getUvi(){
+   if (client.connect(servername, 80))
+  { //starts client connection, checks for connection
+    client.println("GET /data/2.5/uvi?appid=5f251236f1a557338bf6de0f745e4792&lat=-0.23&lon=-78.53");
+    client.println("Host: api.openweathermap.org");
+    client.println("User-Agent: ArduinoWiFi/1.1");
+    client.println("Connection: close");
+    client.println();
+  }
+  else {
+    Serial.println("connection failed");        //error message if no client connect
+    Serial.println();
+  }
+
+  while (client.connected() && !client.available())
+    delay(1);                                          //waits for data
+  while (client.connected() || client.available())
+  { //connected or data available
+    char c = client.read();                     //gets byte from ethernet buffer
+    result2 = result2 + c;
+  }
+
+  client.stop();                                      //stop client
+  result2.replace('[', ' ');
+  result2.replace(']', ' ');
+  Serial.println(result2);
+  char jsonArray [result2.length() + 1];
+  result2.toCharArray(jsonArray, sizeof(jsonArray));
+  jsonArray[result2.length() + 1] = '\0';
+  StaticJsonBuffer<1024> json_buf;
+  JsonObject &root = json_buf.parseObject(jsonArray);
+
+  if (!root.success())
+  {
+    Serial.println("parseObject() failed");
+  }
+
+
+  float uvi = root["value"];
+  weatherUvi = uvi;
+
+
 }
 
 //const char* getIconFromString(String icon) {
