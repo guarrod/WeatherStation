@@ -48,23 +48,21 @@ int tempOut;
 int humOut;
 String Icon;
 float weatherUvi;
-
+String Weather;
 
 // Initialize the OLED display using Arduino Wire:
 SSD1306Wire display(0x3c, SDA, SCL);   // ADDRESS, SDA, SCL  -  SDA and SCL usually populate automatically based on your board's pins_arduino.h
 
-int demoMode = 0;
-//int counter = 1;
-
 void setup() {
   Serial.begin(115200);
-  display.init();
-  dht.begin();
-  display.flipScreenVertically();
-
+  display.init();                       //Start Oled Display
+  dht.begin();                          //Start DHT Sensor
+  display.flipScreenVertically();       //Correct screen orientation
 
   Serial.println("Iniciando");
 
+
+  //WIFI Connect
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PWD);
   while (WiFi.status() != WL_CONNECTED) {
@@ -119,14 +117,8 @@ void loop() {
   // Check if any reads failed and exit early (to try again).
   if (isnan(h) || isnan(t)) {
     Serial.println(F("Failed to read from DHT sensor!"));
-    return;
+    //return;
   }
-
-  //  if(h > maxHum || t > maxTemp) {
-  //      digitalWrite(fan, HIGH);
-  //  } else {
-  //     digitalWrite(fan, LOW);
-  //  }
 
   Serial.print(F("Humidity: "));
   Serial.print(h);
@@ -140,8 +132,9 @@ void loop() {
   Serial.print(hic);
   Serial.print(F("°C "));
 
-  Serial.print("  ");
-  Serial.println(Icon);
+  Serial.print(" ");
+  Serial.println(Icon);                 //For debug
+
 
 
 
@@ -152,11 +145,10 @@ void loop() {
   display.setFont(Open_Sans_Condensed_Bold_20);
 
   //display.drawString(0, 12, "Temperatura: ");
-  display.drawString(0, 7, String(temperatura));
+  display.drawString(0, 7, String(temperatura));          
   display.drawString(20, 7, "°");
 
-  display.drawString(35, 7, String(humedad));
-  //display.drawString(55, 7, "%");
+  display.drawString(35, 7, String(humedad));             
   display.drawXbm(55, 13, 8, 16, drop);
 
   //display.drawString(95, 25, String(sensacion));
@@ -178,15 +170,25 @@ void loop() {
   display.drawString(70, 41, String(weatherUvi));
   display.setFont(ArialMT_Plain_10);
   display.drawString(114, 52, "uV");
+ 
+
+    if (Icon == "Clouds") {
+    display.drawXbm(75, -5, 50, 50, cloudy_bits);
+  } else if (Icon == "Clear") {
+    display.drawXbm(75, -5, 50, 50, clear_day_bits);
+  } else if (Icon == "Rain") {
+    display.drawXbm(75, -5, 50, 50, rain_bits);
+  } else if (Icon == "Rain") {
+    Serial.print("No se ha configurado Icono");
+  }
+
+
+
+
   
-
-  //display.drawString(40,80, String(Icon));
-
-  display.drawXbm(75,-5, 50, 50, clear_day_bits);     //Icon TODO: Make Dinamyc
+  
+  
   //display.drawHorizontalLine(20, 58, 60);          //For aligment tests
-
-
-
 
 
   if (counter == 60)                                //Get new data every 10 minutes
@@ -257,15 +259,46 @@ void getWeatherData()                                //client function to send/r
   String description = root["weather"]["description"];
   float pressure = root["main"]["pressure"];
   String icon = root["weather"]["icon"];
+  Weather = weather;
   weatherDescription = description;
   weatherLocation = location;
   Country = country;
-  Icon = icon;
+  Icon = weather;
   Temperature = temperature;
   tempOut = round(temperature);
   humOut = round(humidity);
   Humidity = humidity;
   Pressure = pressure;
+ 
+}
+
+void pronostico(){
+
+
+  
+//  if (icon == "clear-day") {
+//    return clear_day_bits;
+//  } else if (icon == "clear-night") {
+//    return clear_night_bits;
+//  } else if (icon == "rain") {
+//    return rain_bits;
+//  } else if (icon == "snow") {
+//    return snow_bits;
+//  } else if (icon == "sleet") {
+//    return sleet_bits;
+//  } else if (icon == "wind") {
+//    return wind_bits;
+//  } else if (icon == "fog") {
+//    return fog_bits;
+//  } else if (icon == "cloudy") {
+//    return cloudy_bits;
+//  } else if (icon == "partly-cloudy-day") {
+//    return partly_cloudy_day_bits;
+//  } else if (icon == "partly-cloudy-night") {
+//    return partly_cloudy_night_bits;
+//  }
+
+
 }
 
 
@@ -313,8 +346,11 @@ void getUvi(){
 
 }
 
+
+
+
 //const char* getIconFromString(String icon) {
-//   //"clear-day, clear-night, rain, snow, sleet, wind, fog, cloudy, partly-cloudy-day, or partly-cloudy-night"
+//  "clear-day, clear-night, rain, snow, sleet, wind, fog, cloudy, partly-cloudy-day, or partly-cloudy-night"
 //  if (icon == "clear-day") {
 //    return clear_day_bits;
 //  } else if (icon == "clear-night") {
