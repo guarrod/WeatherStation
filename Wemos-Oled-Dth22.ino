@@ -173,7 +173,7 @@ void loop() {
  
 
     if (Icon == "Clouds") {
-    display.drawXbm(75, -5, 50, 50, cloudy_bits);
+    display.drawXbm(75, -5, 55, 40, cloudy_bits);
   } else if (Icon == "Clear") {
     display.drawXbm(75, -5, 50, 50, clear_day_bits);
   } else if (Icon == "Rain") {
@@ -183,7 +183,7 @@ void loop() {
   }
 
 
-
+display.drawRect(73, 0, 55, 40);    //Size for Weather icon x/y * w/h
 
   
   
