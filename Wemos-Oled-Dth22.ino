@@ -172,18 +172,20 @@ void loop() {
   display.drawString(114, 52, "uV");
  
 
-    if (Icon == "Clouds") {
-    display.drawXbm(75, -5, 55, 40, cloudy_bits);
-  } else if (Icon == "Clear") {
-    display.drawXbm(75, -5, 50, 50, clear_day_bits);
-  } else if (Icon == "Rain") {
-    display.drawXbm(75, -5, 50, 50, rain_bits);
-  } else if (Icon == "Rain") {
-    Serial.print("No se ha configurado Icono");
-  }
+//    if (Icon == "Clouds") {
+//    display.drawXbm(75, -5, 55, 40, cloudy_bits);
+//  } else if (Icon == "Clear") {
+//    display.drawXbm(75, -5, 50, 50, clear_day_bits);
+//  } else if (Icon == "Rain") {
+//    display.drawXbm(75, -5, 50, 50, rain_bits);
+//  } else if (Icon == "Rain") {
+//    Serial.print("No se ha configurado Icono");
+//  }
+
+//display.drawXbm(75, 0, 41, 40, icon_bits);
 
 
-display.drawRect(73, 0, 55, 40);    //Size for Weather icon x/y * w/h
+//display.drawRect(73, 0, 55, 40);    //Size for Weather icon x/y * w/h
 
   
   
