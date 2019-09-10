@@ -108,7 +108,7 @@ void loop () {
 
 
   /////// INDOOR  ///////
-  display.setFont(&Nimbus_Sans_L_10);
+  display.setFont(&Nimbus_Sans_L_Regular_Condensed_10);
   display.setCursor(0,7);               
   display.println("Indoor");
 
@@ -118,14 +118,14 @@ void loop () {
   display.drawCircle(23, 15, 2, WHITE);
 
   display.setCursor(35,27);
-  display.println(humedad);             
-  //display.drawXbm(55, 13, 8, 16, drop);
+  display.println(humedad);
+  display.drawBitmap(56, 11,  Drop, 8, 16, WHITE);              
 
   //display.println(SHT2x.GetDewPoint()); 
   //display.drawString(109, 25, "°C");
 
   /////// OUTDOOR  ///////
-  display.setFont(&Nimbus_Sans_L_10);
+  display.setFont(&Nimbus_Sans_L_Regular_Condensed_10);
   display.setCursor(0,41);               
   display.println("Outdoor");
 
@@ -137,30 +137,31 @@ void loop () {
   display.setFont(&Open_Sans_Condensed_Bold_20); 
   display.setCursor(35,60);               
   display.println(humOut);
-  //display.drawXbm(55, 47, 8, 16, drop);
+  display.drawBitmap(56, 44,  Drop, 8, 16, WHITE);   
 
   display.setFont(&Open_Sans_Condensed_Bold_20); 
   display.setCursor(70,60);               
   display.println(weatherUvi);  
 
-  display.setFont(&Nimbus_Sans_L_10);
+  display.setFont(&Nimbus_Sans_L_Regular_Condensed_10);
   display.setCursor(93,60);               
   display.println("uV");
 
 
-    if (Icon == "Clouds") {
-    display.setCursor(80,36);
-    display.setFont(&Nimbus_Sans_L_10);
-    display.println("Clouds");
-    display.drawBitmap(60, 2,  Clouds, 50, 50, WHITE);   
-  } else if (Icon == "Clear") {
-    display.println("Otro 1");
-    display.drawBitmap(75, 1,  ClearNight, 35, 35, WHITE);  
-  } else if (Icon == "Rain") {
-    display.println("Otro 2");
-  } else if (Icon == "Rain") {
-    display.println("Otro 3");
-  }
+    if (Icon == "02d") {
+    display.drawBitmap(75, 1,  FewCloudsDay, 35, 35, WHITE);   
+  } else if (Icon == "01d") {
+    display.drawBitmap(75, 1,  ClearDay, 35, 35, WHITE);  
+  } else if (Icon == "10d") {
+    display.drawBitmap(75, 1,  Rain, 35, 35, WHITE);  
+  } else if (Icon == "50d" || Icon == "50n") {
+    display.drawBitmap(75, 1,  Mist, 35, 35, WHITE);  
+  } else if (Icon == "03d" || Icon == "03n") {
+    display.drawBitmap(75, 1,  ScatteredClouds, 35, 35, WHITE);  
+  } else{
+    display.drawBitmap(75, 1,  NA, 35, 35, WHITE);  
+    }
+
 
 
 
@@ -231,7 +232,7 @@ void getWeatherData()                                //client function to send/r
   String country = root["sys"]["country"];
   float temperature = root["main"]["temp"];
   float humidity = root["main"]["humidity"];
-  String weather = root["weather"]["main"];
+  String weather = root["weather"]["icon"];
   String description = root["weather"]["description"];
   float pressure = root["main"]["pressure"];
   String icon = root["weather"]["icon"];
