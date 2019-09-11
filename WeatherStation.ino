@@ -108,7 +108,7 @@ void loop () {
 
 
   /////// INDOOR  ///////
-  display.setFont(&Nimbus_Sans_L_Regular_Condensed_10);
+  display.setFont(&Nimbus_Sans_L_10);
   display.setCursor(0,7);               
   display.println("Indoor");
 
@@ -125,7 +125,7 @@ void loop () {
   //display.drawString(109, 25, "°C");
 
   /////// OUTDOOR  ///////
-  display.setFont(&Nimbus_Sans_L_Regular_Condensed_10);
+  display.setFont(&Nimbus_Sans_L_10);
   display.setCursor(0,41);               
   display.println("Outdoor");
 
@@ -143,7 +143,7 @@ void loop () {
   display.setCursor(70,60);               
   display.println(weatherUvi);  
 
-  display.setFont(&Nimbus_Sans_L_Regular_Condensed_10);
+  display.setFont(&Nimbus_Sans_L_10);
   display.setCursor(93,60);               
   display.println("uV");
 
@@ -152,6 +152,8 @@ void loop () {
     display.drawBitmap(75, 1,  FewCloudsDay, 35, 35, WHITE);   
   } else if (Icon == "01d") {
     display.drawBitmap(75, 1,  ClearDay, 35, 35, WHITE);  
+  } else if (Icon == "01n") {
+    display.drawBitmap(80, 1,  ClearNight, 35, 35, WHITE);  
   } else if (Icon == "10d") {
     display.drawBitmap(75, 1,  Rain, 35, 35, WHITE);  
   } else if (Icon == "50d" || Icon == "50n") {
