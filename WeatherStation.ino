@@ -101,6 +101,11 @@ void loop () {
   temperatura = SHT2x.GetTemperature();
   humedad = SHT2x.GetHumidity();
 
+  
+//display.drawRect(77, 0, 50, 40, WHITE);
+
+  
+
   Serial.print("Temperatura: ");
   Serial.print(SHT2x.GetTemperature());
   Serial.print("  Humedad:  ");
@@ -148,8 +153,10 @@ void loop () {
   display.println("uV");
 
 
-    if (Icon == "02d") {
-    display.drawBitmap(75, 1,  FewCloudsDay, 35, 35, WHITE);   
+         if (Icon == "02d") {
+    display.drawBitmap(90, 5,  FewCloudsDay, 28, 28, WHITE);   
+  } else if (Icon == "02n") {
+    display.drawBitmap(75, 1,  FewCloudsNight, 40, 28, WHITE);  
   } else if (Icon == "01d") {
     display.drawBitmap(75, 1,  ClearDay, 35, 35, WHITE);  
   } else if (Icon == "01n") {
@@ -159,8 +166,10 @@ void loop () {
   } else if (Icon == "50d" || Icon == "50n") {
     display.drawBitmap(75, 1,  Mist, 35, 35, WHITE);  
   } else if (Icon == "03d" || Icon == "03n") {
-    display.drawBitmap(75, 1,  ScatteredClouds, 35, 35, WHITE);  
-  } else{
+    display.drawBitmap(75, 1,  ScatteredClouds, 46, 28, WHITE);  
+  } else if (Icon == "04d" || Icon == "04n") {
+    display.drawBitmap(75, 1,  BrokenClouds, 51, 28, WHITE);  
+  }else{
     display.drawBitmap(75, 1,  NA, 35, 35, WHITE);  
     }
 
