@@ -54,13 +54,13 @@ void setup(){
   display.clearDisplay();
   display.setTextColor(WHITE);
   display.setTextSize(1);             
-  pinMode(LED_BUILTIN, OUTPUT); 
+  pinMode(LED_BUILTIN, OUTPUT);   
 
   Serial.println("Run");
 
   //WIFI
   WiFi.mode(WIFI_STA);
-  wifiMulti.addAP("Webcreek", "gosu2017");
+  //wifiMulti.addAP("Webcreek", "gosu2017");
   wifiMulti.addAP("GUARRODSTUDIO", "3libras#");
   Serial.println("Conectando");
   while (wifiMulti.run() != WL_CONNECTED) 
@@ -100,11 +100,6 @@ void loop () {
 
   temperatura = SHT2x.GetTemperature();
   humedad = SHT2x.GetHumidity();
-
-  
-//display.drawRect(77, 0, 50, 40, WHITE);
-
-  
 
   Serial.print("Temperatura: ");
   Serial.print(SHT2x.GetTemperature());
@@ -153,10 +148,8 @@ void loop () {
   display.println("uV");
 
 
-         if (Icon == "02d") {
-    display.drawBitmap(90, 5,  FewCloudsDay, 28, 28, WHITE);   
-  } else if (Icon == "02n") {
-    display.drawBitmap(75, 1,  FewCloudsNight, 40, 28, WHITE);  
+    if (Icon == "02d") {
+    display.drawBitmap(75, 1,  FewCloudsDay, 35, 35, WHITE);   
   } else if (Icon == "01d") {
     display.drawBitmap(75, 1,  ClearDay, 35, 35, WHITE);  
   } else if (Icon == "01n") {
@@ -166,22 +159,10 @@ void loop () {
   } else if (Icon == "50d" || Icon == "50n") {
     display.drawBitmap(75, 1,  Mist, 35, 35, WHITE);  
   } else if (Icon == "03d" || Icon == "03n") {
-    display.drawBitmap(75, 1,  ScatteredClouds, 46, 28, WHITE);  
-  } else if (Icon == "04d" || Icon == "04n") {
-    display.drawBitmap(75, 1,  BrokenClouds, 51, 28, WHITE);  
-  }else{
+    display.drawBitmap(75, 1,  ScatteredClouds, 35, 35, WHITE);  
+  } else{
     display.drawBitmap(75, 1,  NA, 35, 35, WHITE);  
     }
-
-
-
-
-
-
-
-
-  
-
 
     if (counter == 60)    //Get new data every 10 minutes
   {
@@ -228,25 +209,24 @@ void getWeatherData()                                //client function to send/r
   result.replace('[', ' ');
   result.replace(']', ' ');
   Serial.println(result);
-  char jsonArray [result.length() + 1];
-  result.toCharArray(jsonArray, sizeof(jsonArray));
-  jsonArray[result.length() + 1] = '\0';
-  StaticJsonBuffer<1024> json_buf;
-  JsonObject &root = json_buf.parseObject(jsonArray);
+  char json [result.length() + 1];
+  result.toCharArray(json, sizeof(json));
+  json[result.length() + 1] = '\0';
+  StaticJsonDocument<1024> doc;
+  DeserializationError error = deserializeJson(doc, json);
 
-  if (!root.success())
-  {
+  if (error){
     Serial.println("parseObject() failed");
   }
 
-  String location = root["name"];
-  String country = root["sys"]["country"];
-  float temperature = root["main"]["temp"];
-  float humidity = root["main"]["humidity"];
-  String weather = root["weather"]["icon"];
-  String description = root["weather"]["description"];
-  float pressure = root["main"]["pressure"];
-  String icon = root["weather"]["icon"];
+  String location = doc["name"];
+  String country = doc["sys"]["country"];
+  float temperature = doc["main"]["temp"];
+  float humidity = doc["main"]["humidity"];
+  String weather = doc["weather"]["icon"];
+  String description = doc["weather"]["description"];
+  float pressure = doc["main"]["pressure"];
+  String icon = doc["weather"]["icon"];
   Weather = weather;
   weatherDescription = description;
   weatherLocation = location;
@@ -285,19 +265,18 @@ void getUvi(){
   result2.replace('[', ' ');
   result2.replace(']', ' ');
   Serial.println(result2);
-  char jsonArray [result2.length() + 1];
-  result2.toCharArray(jsonArray, sizeof(jsonArray));
-  jsonArray[result2.length() + 1] = '\0';
-  StaticJsonBuffer<1024> json_buf;
-  JsonObject &root = json_buf.parseObject(jsonArray);
+  char json [result2.length() + 1];
+  result2.toCharArray(json, sizeof(json));
+  json[result2.length() + 1] = '\0';
+  StaticJsonDocument<1024> doc;
+  DeserializationError error = deserializeJson(doc, json);
 
-  if (!root.success())
-  {
+  if (error){
     Serial.println("parseObject() failed");
   }
 
 
-  float uvi = root["value"];
+  float uvi = doc["value"];
   weatherUvi = uvi;
 
 
